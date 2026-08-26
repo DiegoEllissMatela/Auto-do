@@ -87,17 +87,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Download Action Handler
   const downloadBtns = document.querySelectorAll('.btn-download');
   downloadBtns.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
+    btn.addEventListener('click', () => {
       window.showToast('🚀 Downloading DENM Auto-Do v2.4.0 (Windows x64)...', 'success');
-      
-      // Simulate download trigger after short timeout
-      setTimeout(() => {
-        const dummyLink = document.createElement('a');
-        dummyLink.setAttribute('href', '#');
-        dummyLink.setAttribute('download', 'AutoDo_Setup_v2.4.0.exe');
-        window.showToast('✅ Download initiated! Check your downloads folder.', 'success');
-      }, 1000);
     });
   });
 
