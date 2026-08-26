@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DENM Auto-Do — Next-Gen Mouse & Macro Automation</title>
+  <meta name="description" content="Effortless mouse automation for Windows. Record, repeat, and automate your workflows with sub-millisecond precision.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN for grid utilities -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Geist', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            background: '#0b0c10',
+            surface: '#14151e',
+            'surface-bright': '#1f212d',
+            primary: '#6366f1',
+            'primary-hover': '#4f46e5',
+            record: '#fb6f6f',
+            play: '#4ade80',
+            border: 'rgba(255, 255, 255, 0.08)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- GSAP & ScrollTrigger CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <!-- External Design Stylesheet (design/ folder) -->
+  <link rel="stylesheet" href="design/style.css">
+</head>
+
+<body class="bg-background text-slate-100 antialiased selection:bg-indigo-500 selection:text-white relative min-h-screen flex flex-col justify-between">
+
+  <!-- Ambient Animated Background -->
+  <div class="ambient-bg">
+    <div class="grid-overlay"></div>
+    <div class="orb orb-primary"></div>
+    <div class="orb orb-secondary"></div>
+    <div class="orb orb-red"></div>
+  </div>
+
+  <!-- Header / Top Navigation -->
+  <header class="header-glass sticky top-0 z-50 w-full py-4 px-6 lg:px-12 transition-all duration-300">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 group-hover:scale-105 transition-transform duration-200 shadow-lg shadow-indigo-500/20">
+          <span class="text-xl font-bold font-mono">$</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-bold text-lg tracking-tight text-white group-hover:text-indigo-300 transition-colors">DENM Auto-Do</span>
+          <span class="text-[10px] uppercase font-mono tracking-widest text-slate-400">Mouse Automation</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center gap-8">
+        <a href="#features" class="text-slate-300 hover:text-indigo-400 font-medium text-sm transition-colors">Features</a>
+        <a href="#how-it-works" class="text-slate-300 hover:text-indigo-400 font-medium text-sm transition-colors">How It Works</a>
+        <a href="#shortcuts" class="text-slate-300 hover:text-indigo-400 font-medium text-sm transition-colors">Hotkeys</a>
+        <a href="#download" class="text-slate-300 hover:text-indigo-400 font-medium text-sm transition-colors">Downloads</a>
+      </nav>
+
+      <!-- Action & Github link -->
+      <div class="hidden md:flex items-center gap-4">
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-bright/60 border border-white/5 text-xs text-slate-300">
+          <span class="text-amber-400">★</span>
+          <span class="font-mono">v2.4.0</span>
+        </div>
+        <a href="AutoDo_Windows_v2.4.0.zip" download="AutoDo_Windows_v2.4.0.zip" class="btn-download bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-xl px-5 py-2.5 flex items-center gap-2 transition-all shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50 hover:-translate-y-0.5">
+          <span class="material-symbols-outlined text-lg">download</span>
+          Download
+        </a>
+      </div>
+
+      <!-- Mobile Hamburger Button -->
+      <button id="mobile-menu-btn" class="md:hidden text-slate-300 hover:text-white p-2 rounded-lg bg-surface-bright/50">
+        <span class="material-symbols-outlined text-2xl">menu</span>
+      </button>
+    </div>
+
+    <!-- Mobile Dropdown Nav -->
+    <div id="mobile-nav" class="hidden flex-col gap-4 mt-4 pt-4 border-t border-white/10 md:hidden">
+      <a href="#features" class="text-slate-300 hover:text-indigo-400 text-sm font-medium">Features</a>
+      <a href="#how-it-works" class="text-slate-300 hover:text-indigo-400 text-sm font-medium">How It Works</a>
+      <a href="#shortcuts" class="text-slate-300 hover:text-indigo-400 text-sm font-medium">Hotkeys</a>
+      <a href="#download" class="btn-download bg-indigo-600 text-white text-sm font-semibold rounded-xl py-2.5 text-center">Download for Windows</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="flex-grow flex flex-col justify-center relative z-10 px-6 lg:px-12 py-12 lg:py-20">
+    <div class="max-w-7xl mx-auto w-full grid lg:grid-cols-12 gap-12 lg:gap-14 items-center">
+      
+      <!-- Left Column: Hero Copy & Actions (7 Cols) -->
+      <div class="lg:col-span-7 flex flex-col gap-7 max-w-2xl" data-purpose="hero-text-content">
+        
+        <!-- Badge Pill -->
+        <div class="flex items-center">
+          <div class="badge-pill shadow-lg shadow-indigo-500/10">
+            <span class="badge-dot"></span>
+            <span>Auto-Do v2.4: Sub-millisecond Accuracy Released</span>
+          </div>
+        </div>
+
+        <!-- Headline -->
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-[1.12] tracking-tight">
+          Effortless Mouse Automation: <br>
+          <span class="gradient-text-accent">Record. Repeat. Automate.</span>
+        </h1>
+
+        <!-- Subheading -->
+        <p data-purpose="hero-description" class="text-slate-300 text-lg md:text-xl leading-relaxed font-normal">
+          Boost productivity by capturing your precise mouse trajectories, clicks, and delays. Replay your macros with pixel-perfect accuracy at any speed.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div data-purpose="hero-actions" class="flex flex-wrap items-center gap-4 pt-2">
+          <a href="Launch_AutoDo.bat" download="Launch_AutoDo.bat" class="btn-launch-app group/btn bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-semibold rounded-xl px-6 py-3.5 flex items-center gap-3.5 transition-all duration-200 shadow-xl shadow-indigo-600/30 hover:shadow-indigo-600/50 hover:-translate-y-0.5 border border-indigo-400/30 flex-1 sm:flex-none justify-center">
+            <div class="w-8 h-8 rounded-lg bg-indigo-950/80 border border-indigo-400/40 flex items-center justify-center text-indigo-300 font-bold font-mono text-base shadow-inner group-hover/btn:scale-110 transition-transform">
+              $
+            </div>
+            <div class="text-left leading-tight">
+              <span class="block text-base font-bold">Open Auto Do</span>
+              <span class="block text-xs text-indigo-200 font-normal">One-Click Desktop App</span>
+            </div>
+          </a>
+
+          <a href="AutoDo_Windows_v2.4.0.zip" download="AutoDo_Windows_v2.4.0.zip" class="btn-download bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl px-6 py-4 flex items-center gap-3 transition-all duration-200 shadow-xl shadow-indigo-600/30 hover:shadow-indigo-600/50 hover:-translate-y-0.5 flex-1 sm:flex-none justify-center">
+            <span class="material-symbols-outlined text-xl">download</span>
+            <div class="text-left leading-tight">
+              <span class="block text-sm font-bold">Download v2.4</span>
+              <span class="block text-[11px] text-indigo-200 font-normal">Windows (x64 Zip)</span>
+            </div>
+          </a>
+          
+          <button onclick="document.getElementById('btn-play').click()" class="bg-surface-bright/80 hover:bg-surface-bright border border-white/10 hover:border-indigo-500/40 text-slate-200 font-semibold rounded-xl px-5 py-4 flex items-center gap-2 transition-all duration-200 flex-1 sm:flex-none justify-center">
+            <span class="material-symbols-outlined text-emerald-400 text-lg">play_circle</span>
+            <span class="text-sm">Test Simulator</span>
+          </button>
+        </div>
+
+        <!-- Metric Specs Pill Row -->
+        <div data-purpose="hero-metrics" class="grid grid-cols-3 gap-4 pt-4 border-t border-white/10 max-w-lg">
+          <div>
+            <div class="text-2xl font-bold font-mono text-white">&lt; 4.8 MB</div>
+            <div class="text-xs text-slate-400">Zero bloat executable</div>
+          </div>
+          <div>
+            <div class="text-2xl font-bold font-mono text-emerald-400">0.1 ms</div>
+            <div class="text-xs text-slate-400">Polling latency</div>
+          </div>
+          <div>
+            <div class="text-2xl font-bold font-mono text-indigo-400">100%</div>
+            <div class="text-xs text-slate-400">Native Windows input</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Interactive App Replica (5 Cols) -->
+      <div class="lg:col-span-5 relative w-full flex flex-col items-center justify-center" data-purpose="hero-app-mockup">
+        
+        <!-- App Window Container (Exact visual match to application screenshot) -->
+        <div class="autodo-app-shell w-full max-w-[440px]">
+          
+          <!-- Window Titlebar -->
+          <div class="app-titlebar">
+            <div class="flex items-center gap-2.5">
+              <span class="text-indigo-400 font-bold font-mono text-base">$</span>
+              <span class="text-xs font-semibold text-slate-200 tracking-wide">Auto Do</span>
+            </div>
+            
+            <!-- Window Control Dots -->
+            <div class="window-dots">
+              <button class="dot dot-red" title="Minimize/Close Simulator" aria-label="Close"></button>
+              <button class="dot dot-yellow" title="Collapse" aria-label="Collapse"></button>
+              <button class="dot dot-green" title="Maximize" aria-label="Maximize"></button>
+            </div>
+          </div>
+
+          <!-- App Body with Live Simulation Canvas -->
+          <div class="app-body">
+            
+            <!-- Status Line -->
+            <div id="app-status" class="text-slate-300 text-sm font-medium tracking-tight">Status: Ready</div>
+
+            <!-- Virtual Cursor Overlay for Playback Simulation -->
+            <svg id="sim-cursor" class="sim-cursor" viewBox="0 0 24 24" fill="none">
+              <path d="M4 2L20 10L12 13L9 21L4 2Z" fill="#4ade80" stroke="#ffffff" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+            
+            <!-- Overlay Canvas for Path Lines -->
+            <canvas id="sim-canvas" class="simulation-canvas-overlay"></canvas>
+
+            <!-- Row 1: Record & Stop Buttons -->
+            <div class="grid grid-cols-2 gap-3.5 relative z-10">
+              <button id="btn-record" class="btn-app btn-app-record" title="Start Recording Mouse Actions">
+                <span class="material-symbols-outlined text-xl">radio_button_checked</span>
+                <span>Record</span>
+              </button>
+              
+              <button id="btn-stop" class="btn-app btn-app-stop" title="Stop Current Recording or Playback">
+                <span class="material-symbols-outlined text-xl">stop</span>
+                <span>Stop</span>
+              </button>
+            </div>
+
+            <!-- Row 2: Center Play Button -->
+            <div class="flex justify-center relative z-10">
+              <button id="btn-play" class="btn-app btn-app-play w-full max-w-[240px]" title="Play Recorded Automation Sequence">
+                <span class="material-symbols-outlined text-2xl font-bold">play_arrow</span>
+                <span>Play</span>
+              </button>
+            </div>
+
+            <!-- Loop / Repetition Settings Row -->
+            <div class="flex items-center justify-between text-xs text-slate-300 bg-surface-bright/40 px-3.5 py-2 rounded-lg border border-white/5 relative z-10">
+              <div class="flex items-center gap-2">
+                <span class="text-slate-400 font-medium">Loops:</span>
+                <input id="sim-loop-count" type="number" min="1" max="999" value="1" class="w-12 bg-background/80 border border-white/10 text-white rounded px-2 py-0.5 text-xs text-center font-mono focus:border-indigo-500 focus:outline-none">
+              </div>
+              <label class="flex items-center gap-2 cursor-pointer select-none">
+                <input id="sim-infinite-check" type="checkbox" class="rounded bg-background/80 border-white/20 text-indigo-600 focus:ring-0 text-xs">
+                <span class="text-slate-300">Repeat Infinitely (∞)</span>
+              </label>
+            </div>
+
+            <!-- Row 3: Save & Load Buttons -->
+            <div class="grid grid-cols-2 gap-3.5 relative z-10">
+              <button id="btn-save" class="btn-app btn-app-indigo" title="Save Macro to JSON Profile">
+                <span class="material-symbols-outlined text-xl">save</span>
+                <span>Save</span>
+              </button>
+              
+              <button id="btn-load" class="btn-app btn-app-indigo" title="Load Preset / Saved Macro">
+                <span class="material-symbols-outlined text-xl">folder_open</span>
+                <span>Load</span>
+              </button>
+            </div>
+
+            <!-- App Footer Info & Help Button -->
+            <div class="mt-auto pt-2 flex justify-between items-end relative z-10">
+              <span class="text-xs italic text-slate-400 select-none tracking-wider">CreatedByAyziel</span>
+              <button id="btn-help" class="btn-app-help" title="View Help & Hotkeys">
+                <span class="material-symbols-outlined text-xl font-bold">help</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Hint Pill below Mockup -->
+        <div class="mt-4 flex items-center gap-2 text-xs text-slate-400 bg-surface-bright/40 px-3.5 py-1.5 rounded-full border border-white/5">
+          <span class="material-symbols-outlined text-sm text-indigo-400">touch_app</span>
+          <span>Click <strong>Record</strong> or <strong>Play</strong> in the mockup above to test live</span>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Section: Core Features Grid -->
+    <section id="features" class="max-w-7xl mx-auto w-full pt-28 pb-16">
+      <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+        <div class="badge-pill">
+          <span>Engineered For Precision</span>
+        </div>
+        <h2 class="text-3xl md:text-4xl font-extrabold text-white">
+          Everything you need for flawless automation
+        </h2>
+        <p class="text-slate-400 text-base md:text-lg">
+          Designed from the ground up to be ultra-fast, lightweight, and completely dependable.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Feature 1 -->
+        <div class="glass-card p-6 flex flex-col gap-4 feature-card">
+          <div class="icon-box">
+            <span class="material-symbols-outlined text-2xl">speed</span>
+          </div>
+          <h3 class="text-lg font-bold text-white">Sub-Millisecond Polling</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            Direct Windows API hooks capture high-frequency cursor tracking with microsecond-level delay replication.
+          </p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="glass-card p-6 flex flex-col gap-4 feature-card">
+          <div class="icon-box">
+            <span class="material-symbols-outlined text-2xl">repeat</span>
+          </div>
+          <h3 class="text-lg font-bold text-white">Infinite Loop & Speed Tuning</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            Replay your macros continuously or adjust playback speeds up to 10x with zero coordinate distortion.
+          </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="glass-card p-6 flex flex-col gap-4 feature-card">
+          <div class="icon-box">
+            <span class="material-symbols-outlined text-2xl">keyboard</span>
+          </div>
+          <h3 class="text-lg font-bold text-white">Global Hotkey Controls</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            Start and stop recording without switching away from full-screen games, browser workflows, or desktop apps.
+          </p>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="glass-card p-6 flex flex-col gap-4 feature-card">
+          <div class="icon-box">
+            <span class="material-symbols-outlined text-2xl">file_save</span>
+          </div>
+          <h3 class="text-lg font-bold text-white">Exportable JSON Profiles</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            Save and share your custom automation sequences as clean, human-readable JSON configuration files.
+          </p>
+        </div>
+
+        <!-- Feature 5 -->
+        <div class="glass-card p-6 flex flex-col gap-4 feature-card">
+          <div class="icon-box">
+            <span class="material-symbols-outlined text-2xl">lock_open</span>
+          </div>
+          <h3 class="text-lg font-bold text-white">Zero Bloat & No Telemetry</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            Under 5MB file size, zero background services, no cloud logins, and 100% private offline execution.
+          </p>
+        </div>
+
+        <!-- Feature 6 -->
+        <div class="glass-card p-6 flex flex-col gap-4 feature-card">
+          <div class="icon-box">
+            <span class="material-symbols-outlined text-2xl">palette</span>
+          </div>
+          <h3 class="text-lg font-bold text-white">Sleek Dark Theme UI</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            Modern, compact interface created by Ayziel designed to stay out of your way while you get work done.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section: How It Works -->
+    <section id="how-it-works" class="max-w-7xl mx-auto w-full py-16 border-t border-white/5">
+      <div class="text-center max-w-2xl mx-auto mb-16 space-y-4">
+        <h2 class="text-3xl font-extrabold text-white">Automate In 3 Simple Steps</h2>
+        <p class="text-slate-400">From repetitive task to instant one-click playback in seconds.</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        
+        <div class="glass-card p-8 flex flex-col gap-4 relative step-card">
+          <div class="w-10 h-10 rounded-full bg-red-500/20 text-red-400 font-mono font-bold flex items-center justify-center border border-red-500/30">
+            01
+          </div>
+          <h3 class="text-xl font-bold text-white">Hit Record (F11)</h3>
+          <p class="text-slate-400 text-sm">
+            Press Record (F11) and perform your mouse clicks, drags, or repetitive form entries naturally.
+          </p>
+        </div>
+
+        <div class="glass-card p-8 flex flex-col gap-4 relative step-card">
+          <div class="w-10 h-10 rounded-full bg-indigo-500/20 text-indigo-400 font-mono font-bold flex items-center justify-center border border-indigo-500/30">
+            02
+          </div>
+          <h3 class="text-xl font-bold text-white">Stop & Save (F12)</h3>
+          <p class="text-slate-400 text-sm">
+            Press Stop (F12) once finished. Save your profile to replay anytime or share with teammates.
+          </p>
+        </div>
+
+        <div class="glass-card p-8 flex flex-col gap-4 relative step-card">
+          <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 font-mono font-bold flex items-center justify-center border border-emerald-500/30">
+            03
+          </div>
+          <h3 class="text-xl font-bold text-white">Replay (F10)</h3>
+          <p class="text-slate-400 text-sm">
+            Hit Play (F10) and watch Auto-Do execute your workflow with exact sub-millisecond fidelity.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section: Keyboard Shortcuts Cheat Sheet -->
+    <section id="shortcuts" class="max-w-7xl mx-auto w-full py-16">
+      <div class="glass-card p-8 md:p-12 border border-indigo-500/20 bg-gradient-to-b from-indigo-950/20 to-surface">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+          <div>
+            <h3 class="text-2xl font-bold text-white">Default Hotkey Map</h3>
+            <p class="text-slate-400 text-sm">Use global hotkeys even when the application is running in the background.</p>
+          </div>
+          <button class="btn-copy text-xs font-mono bg-surface-bright px-4 py-2 rounded-lg border border-white/10 hover:border-indigo-400 text-indigo-300 transition-colors" data-copy="F11: Record | F12: Stop | F10: Play">
+            Copy Hotkey Map
+          </button>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div class="bg-background/60 p-4 rounded-xl border border-white/5 text-center">
+            <kbd class="px-3 py-1 bg-surface-bright rounded text-sm font-mono font-bold text-red-400 border border-white/10">F11</kbd>
+            <div class="text-xs font-medium text-slate-300 mt-2">Start Recording</div>
+          </div>
+          <div class="bg-background/60 p-4 rounded-xl border border-white/5 text-center">
+            <kbd class="px-3 py-1 bg-surface-bright rounded text-sm font-mono font-bold text-indigo-400 border border-white/10">F12</kbd>
+            <div class="text-xs font-medium text-slate-300 mt-2">End Recording</div>
+          </div>
+          <div class="bg-background/60 p-4 rounded-xl border border-white/5 text-center">
+            <kbd class="px-3 py-1 bg-surface-bright rounded text-sm font-mono font-bold text-emerald-400 border border-white/10">F10</kbd>
+            <div class="text-xs font-medium text-slate-300 mt-2">Replay Macro</div>
+          </div>
+          <div class="bg-background/60 p-4 rounded-xl border border-white/5 text-center">
+            <kbd class="px-3 py-1 bg-surface-bright rounded text-sm font-mono font-bold text-slate-300 border border-white/10">Esc</kbd>
+            <div class="text-xs font-medium text-slate-300 mt-2">Emergency Halt</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Download Section CTA -->
+    <section id="download" class="max-w-7xl mx-auto w-full py-16 text-center">
+      <div class="glass-card p-10 md:p-16 relative overflow-hidden">
+        <div class="relative z-10 max-w-2xl mx-auto space-y-6">
+          <h2 class="text-3xl md:text-5xl font-extrabold text-white">
+            Ready to automate your repetitive clicks?
+          </h2>
+          <p class="text-slate-300 text-lg">
+            Download DENM Auto-Do for free today. Lightweight, zero dependencies, instant portable setup.
+          </p>
+          <div class="flex flex-wrap justify-center gap-4 pt-4">
+            <a href="Launch_AutoDo.bat" download="Launch_AutoDo.bat" class="btn-launch-app group/btn bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-bold text-base rounded-xl px-7 py-4 flex items-center gap-3.5 shadow-xl shadow-indigo-600/40 hover:scale-105 transition-all border border-indigo-400/30">
+              <div class="w-8 h-8 rounded-lg bg-indigo-950/80 border border-indigo-400/40 flex items-center justify-center text-indigo-300 font-bold font-mono text-base shadow-inner group-hover/btn:scale-110 transition-transform">
+                $
+              </div>
+              <span>Launch Desktop App</span>
+            </a>
+            <a href="AutoDo_Windows_v2.4.0.zip" download="AutoDo_Windows_v2.4.0.zip" class="btn-download bg-surface-bright hover:bg-surface border border-white/10 hover:border-indigo-400/40 text-white font-semibold text-base rounded-xl px-7 py-4 flex items-center gap-3 transition-all">
+              <span class="material-symbols-outlined text-xl text-indigo-400">download</span>
+              <span>Download Zip (v2.4 x64)</span>
+            </a>
+            <button class="btn-copy bg-surface-bright hover:bg-surface border border-white/10 text-slate-300 font-medium rounded-xl px-6 py-4 text-sm" data-copy="winget install DENM.AutoDo">
+              winget install DENM.AutoDo
+            </button>
+          </div>
+          <div class="text-xs text-slate-400 pt-2">
+            Compatible with Windows 11, 10, 8.1 (64-bit) • SHA-256 Verified
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Help & Shortcuts Modal -->
+  <div id="help-modal" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="flex justify-between items-center pb-4 border-b border-white/10">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-indigo-400">help_outline</span>
+          <h4 class="font-bold text-white text-lg">Auto Do Quick Guide</h4>
+        </div>
+        <button id="btn-close-help" class="text-slate-400 hover:text-white p-1">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="py-5 space-y-4 text-sm text-slate-300">
+        <div class="flex items-start gap-3">
+          <span class="px-2 py-0.5 rounded bg-red-500/20 text-red-400 font-mono text-xs font-bold mt-0.5">Record</span>
+          <p>Press <strong>Record (F8)</strong> to start capturing mouse movements, clicks, and delays.</p>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-400 font-mono text-xs font-bold mt-0.5">Stop</span>
+          <p>Press <strong>Stop (F9)</strong> to conclude the current recording or halt active playback.</p>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono text-xs font-bold mt-0.5">Play</span>
+          <p>Press <strong>Play (F10)</strong> to replay the recorded automation macro.</p>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-400 font-mono text-xs font-bold mt-0.5">Save/Load</span>
+          <p>Export your macro sequence as a JSON profile to reuse anytime.</p>
+        </div>
+      </div>
+
+      <div class="pt-4 border-t border-white/10 flex justify-between items-center text-xs text-slate-400">
+        <span>CreatedByAyziel</span>
+        <button onclick="document.getElementById('help-modal').classList.remove('open')" class="px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-500">
+          Got It
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Footer -->
+  <footer class="w-full py-8 px-6 lg:px-12 border-t border-white/5 bg-background text-slate-400 text-sm relative z-10">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-white">DENM Auto-Do</span>
+        <span class="text-slate-400">• Created by <strong class="text-slate-300">Ayziel</strong></span>
+      </div>
+      <div class="flex gap-6 text-xs">
+        <a href="#features" class="hover:text-indigo-400 transition-colors">Features</a>
+        <a href="#how-it-works" class="hover:text-indigo-400 transition-colors">Documentation</a>
+        <a href="#download" class="hover:text-indigo-400 transition-colors">Downloads</a>
+        <a href="#" onclick="window.showToast('All systems operational', 'info'); return false;" class="hover:text-indigo-400 transition-colors">Status</a>
+      </div>
+      <div class="text-xs text-slate-400">
+        © 2026 DENM Auto-Do. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- External Application Logic Scripts (logic/ folder) -->
+  <script src="logic/main.js"></script>
+  <script src="logic/simulator.js"></script>
+  <script src="logic/animations.js"></script>
+</body>
+</html>
