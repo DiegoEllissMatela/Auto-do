@@ -72,6 +72,3 @@ The repository is pre-configured for GitHub Pages:
 ```
 
 ---
-
-## 📄 License
-MIT License. Created with precision by **Ayziel**.
